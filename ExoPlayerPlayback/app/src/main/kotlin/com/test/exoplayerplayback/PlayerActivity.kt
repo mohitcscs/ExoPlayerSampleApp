@@ -20,7 +20,7 @@ class PlayerActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+       // requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
         binding = ActivityPlayerBinding.inflate(layoutInflater)
 
         setContentView(binding.root)
@@ -42,6 +42,11 @@ class PlayerActivity : AppCompatActivity() {
         }
 
         getPlaybackUrl()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        playerViewModel.clearUpPlayer()
     }
 
     // Get playback url

@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import androidx.core.view.contains
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.PlaybackException
@@ -125,7 +126,7 @@ class VideoPlayer private constructor(
             override fun onIsPlayingChanged(isPlaying: Boolean) {
                 if (!isPlaying && exoPlayer.playbackState == Player.STATE_IDLE) {
                     clientViewGroup.removeView(styledPlayerView)
-                } else {
+                } else if (!clientViewGroup.contains(styledPlayerView)){
                     clientViewGroup.addView(styledPlayerView)
                 }
             }
@@ -144,7 +145,6 @@ class VideoPlayer private constructor(
         cancelTasksJob()
         taskJob = playerScope.launch {
             while (isActive) {
-                Log.d("Mohit", "${exoPlayer.currentPosition}")
                 logEvents.logPlaybackStatus(
                     exoPlayer.currentPosition,
                     exoPlayer.currentMediaItem!!.mediaId

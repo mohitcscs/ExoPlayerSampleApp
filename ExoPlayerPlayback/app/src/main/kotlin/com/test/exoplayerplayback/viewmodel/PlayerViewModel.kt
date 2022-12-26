@@ -83,8 +83,7 @@ class PlayerViewModel constructor(
         }
     }
 
-    override fun onCleared() {
-        super.onCleared()
+    fun clearUpPlayer() {
         videoPlayer.clearVideoPlayer()
     }
 }
