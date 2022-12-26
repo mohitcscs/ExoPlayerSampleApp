@@ -3,10 +3,7 @@ package com.exoplayer.playeranalytics
 import android.annotation.SuppressLint
 import android.util.Log
 import com.google.gson.GsonBuilder
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import java.time.Instant
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -15,6 +12,7 @@ class AnalyticsLogger {
     object Logger {
         private val TAG = "AnalyticsLogger"
         private var events: Queue<String> = LinkedList()
+        private val scope = CoroutineScope(Dispatchers.IO)
 
         // Configure Gson
         private val gson = GsonBuilder().create()
@@ -26,14 +24,12 @@ class AnalyticsLogger {
         }
 
         fun logEvents(dataMap: MutableMap<String, String>) =
-            GlobalScope.launch(Dispatchers.Default) {
+            scope.launch(block = {
                 if (sendEvents) {
-                    withContext(Dispatchers.Default) {
-                        events.add(addDeviceDetails(dataMap))
-                        sendEvents()
-                    }
+                    events.add(addDeviceDetails(dataMap))
+                    sendEvents()
                 }
-            }
+            })
 
         // Add critical data related to device
         private fun addDeviceDetails(dataMap: MutableMap<String, String>): String {
@@ -48,7 +44,7 @@ class AnalyticsLogger {
 
         // Send events to network or set logs as per requirement
         private fun sendEvents() {
-            while (!events.isEmpty()) {
+            while (!events.isEmpty() && events.peek() != null) {
                 Log.i(TAG, events.poll())
             }
         }
